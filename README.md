@@ -1,3 +1,6 @@
+<img width="1453" height="1236" alt="image" src="https://github.com/user-attachments/assets/515d8619-fff6-4375-860d-eefb2a7bb44e" />
+
+
 # 💡 Uniswap Range Helper
 
 Uniswap V3에서 다른 LP들이 가장 많이 사용한 가격 범위를 실시간으로 보여주는 Chrome 확장 프로그램입니다.
