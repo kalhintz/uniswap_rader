@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uniswap Range Helper</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      width: 320px;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .logo {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+    
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .subtitle {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    .content {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .feature:last-child {
+      margin-bottom: 0;
+    }
+    
+    .feature-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    
+    .feature-text {
+      flex: 1;
+    }
+    
+    .feature-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    
+    .feature-desc {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    .status {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      margin-right: 8px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+    
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      opacity: 0.7;
+    }
+    
+    .footer a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">💡</div>
+    <h1>Uniswap Range Helper</h1>
+    <div class="subtitle">똑똑한 유동성 공급</div>
+  </div>
+  
+  <div class="status">
+    <span class="status-indicator"></span>
+    <span>확장 프로그램 활성화됨</span>
+  </div>
+  
+  <div class="content">
+    <div class="feature">
+      <div class="feature-icon">📊</div>
+      <div class="feature-text">
+        <div class="feature-title">인기 범위 분석</div>
+        <div class="feature-desc">다른 LP들이 가장 많이 사용한 가격 범위를 실시간으로 분석합니다</div>
+      </div>
+    </div>
+    
+    <div class="feature">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-text">
+        <div class="feature-title">원클릭 적용</div>
+        <div class="feature-desc">추천 범위를 클릭 한 번으로 바로 적용할 수 있습니다</div>
+      </div>
+    </div>
+    
+    <div class="feature">
+      <div class="feature-icon">🎯</div>
+      <div class="feature-text">
+        <div class="feature-title">실시간 데이터</div>
+        <div class="feature-desc">최근 블록 데이터를 기반으로 정확한 정보를 제공합니다</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <p>Uniswap 포지션 생성 페이지에서</p>
+    <p>자동으로 작동합니다</p>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

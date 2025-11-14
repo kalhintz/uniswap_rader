@@ -1,0 +1,257 @@
+/* 추천 패널 */
+.range-recommendation-panel {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.recommendation-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: white;
+}
+
+.recommendation-icon {
+  font-size: 24px;
+}
+
+.recommendation-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.recommendation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recommendation-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 12px 16px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.recommendation-item:hover {
+  background: white;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.rec-rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.rec-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.rec-range {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.rec-stats {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.rec-efficiency {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.rec-apply-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.rec-apply-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.rec-apply-btn:active {
+  transform: scale(0.95);
+}
+
+.rec-apply-btn.applied {
+  background: #10b981;
+}
+
+.rec-apply-btn.failed {
+  background: #ef4444;
+}
+
+.rec-apply-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.recommendation-footer {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.recommendation-note {
+  display: block;
+}
+
+/* 로딩 애니메이션 */
+.range-recommendation-loader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 20px 0;
+  color: white;
+  animation: slideIn 0.3s ease-out;
+}
+
+.loader-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 에러 패널 */
+.range-recommendation-error {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 20px 0;
+  color: white;
+  animation: slideIn 0.3s ease-out;
+}
+
+.error-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.error-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.error-message {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.error-retry-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.error-retry-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 다크모드 대응 */
+@media (prefers-color-scheme: dark) {
+  .recommendation-item {
+    background: rgba(30, 30, 30, 0.95);
+  }
+
+  .recommendation-item:hover {
+    background: #2a2a2a;
+  }
+
+  .rec-range {
+    color: #e0e0e0;
+  }
+
+  .rec-stats {
+    color: #999;
+  }
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .range-recommendation-panel {
+    padding: 16px;
+    margin: 16px 0;
+  }
+
+  .recommendation-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .rec-apply-btn {
+    width: 100%;
+  }
+}

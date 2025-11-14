@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Uniswap Range Helper",
+  "version": "1.2.0",
+  "description": "다른 LP들이 많이 사용한 가격 범위를 보여줍니다",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://app.uniswap.org/*",
+    "https://interface.gateway.uniswap.org/*",
+    "https://eth.drpc.org/*",
+    "https://ethereum-rpc.publicnode.com/*",
+    "https://cloudflare-eth.com/*",
+    "https://rpc.flashbots.net/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://app.uniswap.org/positions/create/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
