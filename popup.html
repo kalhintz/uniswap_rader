@@ -10,7 +10,7 @@
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
       width: 320px;
       padding: 20px;
@@ -18,28 +18,28 @@
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
     }
-    
+
     .header {
       text-align: center;
       margin-bottom: 20px;
     }
-    
+
     .logo {
       font-size: 48px;
       margin-bottom: 8px;
     }
-    
+
     h1 {
       font-size: 20px;
       font-weight: 700;
       margin-bottom: 4px;
     }
-    
+
     .subtitle {
       font-size: 12px;
       opacity: 0.8;
     }
-    
+
     .content {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 12px;
@@ -47,37 +47,37 @@
       margin-bottom: 16px;
       backdrop-filter: blur(10px);
     }
-    
+
     .feature {
       display: flex;
       align-items: flex-start;
       gap: 12px;
       margin-bottom: 12px;
     }
-    
+
     .feature:last-child {
       margin-bottom: 0;
     }
-    
+
     .feature-icon {
       font-size: 20px;
       flex-shrink: 0;
     }
-    
+
     .feature-text {
       flex: 1;
     }
-    
+
     .feature-title {
       font-weight: 600;
       margin-bottom: 2px;
     }
-    
+
     .feature-desc {
       font-size: 12px;
       opacity: 0.8;
     }
-    
+
     .status {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 12px;
@@ -85,7 +85,7 @@
       text-align: center;
       margin-bottom: 16px;
     }
-    
+
     .status-indicator {
       display: inline-block;
       width: 8px;
@@ -95,7 +95,7 @@
       margin-right: 8px;
       animation: pulse 2s ease-in-out infinite;
     }
-    
+
     @keyframes pulse {
       0%, 100% {
         opacity: 1;
@@ -104,21 +104,142 @@
         opacity: 0.5;
       }
     }
-    
+
     .footer {
       text-align: center;
       font-size: 11px;
       opacity: 0.7;
     }
-    
+
     .footer a {
       color: white;
       text-decoration: none;
       font-weight: 600;
     }
-    
+
     .footer a:hover {
       text-decoration: underline;
+    }
+
+    /* 설정 섹션 */
+    .settings {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(10px);
+    }
+
+    .settings-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    .settings-icon {
+      font-size: 18px;
+    }
+
+    .settings-title {
+      font-size: 15px;
+    }
+
+    .setting-item {
+      margin-bottom: 16px;
+    }
+
+    .setting-item label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+
+    .range-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    #blockRange {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.2);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    #blockRange::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: white;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    #blockRange::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: white;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .range-value {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+    }
+
+    #blockValue {
+      font-weight: 600;
+    }
+
+    .range-time {
+      opacity: 0.7;
+      font-size: 12px;
+    }
+
+    .save-btn {
+      width: 100%;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .save-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .save-btn:active {
+      transform: scale(0.98);
+    }
+
+    .save-status {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 12px;
+      min-height: 18px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .save-status.show {
+      opacity: 1;
     }
   </style>
 </head>
@@ -128,12 +249,12 @@
     <h1>Uniswap Range Helper</h1>
     <div class="subtitle">똑똑한 유동성 공급</div>
   </div>
-  
+
   <div class="status">
     <span class="status-indicator"></span>
     <span>확장 프로그램 활성화됨</span>
   </div>
-  
+
   <div class="content">
     <div class="feature">
       <div class="feature-icon">📊</div>
@@ -142,7 +263,7 @@
         <div class="feature-desc">다른 LP들이 가장 많이 사용한 가격 범위를 실시간으로 분석합니다</div>
       </div>
     </div>
-    
+
     <div class="feature">
       <div class="feature-icon">⚡</div>
       <div class="feature-text">
@@ -150,7 +271,7 @@
         <div class="feature-desc">추천 범위를 클릭 한 번으로 바로 적용할 수 있습니다</div>
       </div>
     </div>
-    
+
     <div class="feature">
       <div class="feature-icon">🎯</div>
       <div class="feature-text">
@@ -159,12 +280,33 @@
       </div>
     </div>
   </div>
-  
+
+  <div class="settings">
+    <div class="settings-header">
+      <span class="settings-icon">⚙️</span>
+      <span class="settings-title">분석 설정</span>
+    </div>
+
+    <div class="setting-item">
+      <label for="blockRange">분석 블록 수</label>
+      <div class="range-container">
+        <input type="range" id="blockRange" min="1000" max="20000" step="1000" value="5000">
+        <div class="range-value">
+          <span id="blockValue">5,000</span> 블록
+          <span class="range-time" id="timeEstimate">(약 17시간)</span>
+        </div>
+      </div>
+    </div>
+
+    <button id="saveSettings" class="save-btn">설정 저장</button>
+    <div id="saveStatus" class="save-status"></div>
+  </div>
+
   <div class="footer">
     <p>Uniswap 포지션 생성 페이지에서</p>
     <p>자동으로 작동합니다</p>
   </div>
-  
+
   <script src="popup.js"></script>
 </body>
 </html>
