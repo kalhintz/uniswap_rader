@@ -1,3 +1,37 @@
+// 체인별 설정
+const CHAIN_CONFIG = {
+  ethereum: {
+    blockTime: 12,
+    nativeWrapper: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
+    name: 'Ethereum'
+  },
+  base: {
+    blockTime: 2,
+    nativeWrapper: '0x4200000000000000000000000000000000000006', // WETH on Base
+    name: 'Base'
+  },
+  polygon: {
+    blockTime: 2,
+    nativeWrapper: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
+    name: 'Polygon'
+  },
+  optimism: {
+    blockTime: 2,
+    nativeWrapper: '0x4200000000000000000000000000000000000006', // WETH on Optimism
+    name: 'Optimism'
+  },
+  arbitrum: {
+    blockTime: 0.25,
+    nativeWrapper: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1', // WETH on Arbitrum
+    name: 'Arbitrum'
+  },
+  bnb: {
+    blockTime: 3,
+    nativeWrapper: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
+    name: 'BNB Chain'
+  }
+};
+
 // URL 파라미터 파싱
 function getURLParams() {
   const params = new URLSearchParams(window.location.search);
@@ -20,9 +54,10 @@ function getURLParams() {
   return { currencyA, currencyB, chain, fee };
 }
 
-// 시간 계산 (이더리움 블록타임: ~12초)
-function calculateTime(blocks) {
-  const seconds = blocks * 12;
+// 시간 계산 (체인별 블록타임 고려)
+function calculateTime(blocks, chain = 'ethereum') {
+  const config = CHAIN_CONFIG[chain] || CHAIN_CONFIG.ethereum;
+  const seconds = blocks * config.blockTime;
   const hours = seconds / 3600;
 
   if (hours < 1) {
@@ -40,10 +75,11 @@ function calculateTime(blocks) {
   }
 }
 
-// NATIVE를 WETH 주소로 변환
+// NATIVE를 체인별 Wrapped 토큰 주소로 변환
 function normalizeTokenAddress(address, chain) {
-  if (address === 'NATIVE' && chain === 'ethereum') {
-    return '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'; // WETH
+  if (address === 'NATIVE') {
+    const config = CHAIN_CONFIG[chain] || CHAIN_CONFIG.ethereum;
+    return config.nativeWrapper;
   }
   return address;
 }
@@ -88,9 +124,10 @@ function formatPrice(price) {
 }
 
 // 추천 range를 UI에 표시
-function displayRecommendations(recommendations, feeTier = 3000, blockRange = 5000) {
+function displayRecommendations(recommendations, feeTier = 3000, blockRange = 5000, chain = 'ethereum') {
   console.log('='.repeat(50));
   console.log('[UI] displayRecommendations called');
+  console.log('[UI] Chain:', chain);
   console.log('[UI] Fee tier:', feeTier);
   console.log('[UI] Block range:', blockRange);
   console.log('[UI] Recommendations:', recommendations);
@@ -112,7 +149,8 @@ function displayRecommendations(recommendations, feeTier = 3000, blockRange = 50
   });
 
   // 시간 계산
-  const timeStr = calculateTime(blockRange);
+  const timeStr = calculateTime(blockRange, chain);
+  const chainName = CHAIN_CONFIG[chain]?.name || 'Ethereum';
 
   // 추천 패널 생성
   const panel = document.createElement('div');
@@ -156,7 +194,7 @@ function displayRecommendations(recommendations, feeTier = 3000, blockRange = 50
       }).join('')}
     </div>
     <div class="recommendation-footer">
-      <span class="recommendation-note">최근 ${blockRange.toLocaleString()}블록 기준 (${timeStr})</span>
+      <span class="recommendation-note">📍 ${chainName} | 최근 ${blockRange.toLocaleString()}블록 기준 (${timeStr})</span>
       <span class="recommendation-note">⚠️ APY는 대략적인 추정치입니다</span>
     </div>
   `;
@@ -605,8 +643,10 @@ async function main() {
       console.log('='.repeat(80));
 
       const blockRange = response.blockRange || 5000;
+      const chain = response.chain || params.chain || 'ethereum';
       console.log('[CONTENT] Block range:', blockRange);
-      displayRecommendations(response.recommendations, params.fee, blockRange);
+      console.log('[CONTENT] Chain:', chain);
+      displayRecommendations(response.recommendations, params.fee, blockRange, chain);
     }
   );
 }
