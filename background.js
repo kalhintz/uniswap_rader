@@ -79,13 +79,13 @@ async function findPoolAddress(token0, token1, fee) {
 }
 
 // RPC
-async function getMintEventsWeb3(poolAddress) {
+async function getMintEventsWeb3(poolAddress, blockRange = 5000) {
   const RPC_URLS = ['https://eth.drpc.org', 'https://cloudflare-eth.com', 'https://ethereum-rpc.publicnode.com'];
 
   for (const RPC_URL of RPC_URLS) {
     try {
       console.log('[RPC] Trying:', RPC_URL);
-      const result = await fetchMintEvents(RPC_URL, poolAddress);
+      const result = await fetchMintEvents(RPC_URL, poolAddress, blockRange);
       console.log('[RPC] ✓ Success:', result.length, 'events');
       return result;
     } catch (e) {
@@ -95,7 +95,7 @@ async function getMintEventsWeb3(poolAddress) {
   throw new Error('All RPC failed');
 }
 
-async function fetchMintEvents(RPC_URL, poolAddress) {
+async function fetchMintEvents(RPC_URL, poolAddress, blockRange) {
   const blockRes = await fetch(RPC_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -106,9 +106,9 @@ async function fetchMintEvents(RPC_URL, poolAddress) {
   if (blockData.error) throw new Error(blockData.error.message);
 
   const latestBlock = parseInt(blockData.result, 16);
-  const fromBlock = latestBlock - 5000;
+  const fromBlock = latestBlock - blockRange;
 
-  console.log('[RPC] Blocks:', fromBlock, '-', latestBlock);
+  console.log('[RPC] Blocks:', fromBlock, '-', latestBlock, `(${blockRange} blocks, ~${Math.floor(blockRange * 12 / 3600)}h)`);
 
   const logsRes = await fetch(RPC_URL, {
     method: 'POST',
@@ -259,11 +259,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     (async () => {
       try {
+        // 저장된 블록 수 가져오기 (기본값: 5000)
+        const storage = await chrome.storage.sync.get(['blockRange']);
+        const blockRange = storage.blockRange || 5000;
+
         console.log('='.repeat(80));
         console.log('[BACKGROUND] Starting...');
         console.log('[BACKGROUND] Token0:', token0);
         console.log('[BACKGROUND] Token1:', token1);
         console.log('[BACKGROUND] Fee:', fee);
+        console.log('[BACKGROUND] Block Range:', blockRange, `(~${Math.floor(blockRange * 12 / 3600)}h)`);
 
         console.log('[Step 1] Finding pool...');
         const pool = await findPoolAddress(token0, token1, fee);
@@ -273,7 +278,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         console.log('[Step 1] ✓ Token1 decimals:', pool.token1Decimals);
 
         console.log('[Step 2] Fetching events...');
-        const positions = await getMintEventsWeb3(pool.poolId);
+        const positions = await getMintEventsWeb3(pool.poolId, blockRange);
         console.log('[Step 2] ✓ Positions:', positions.length);
 
         if (!positions.length) {
@@ -297,6 +302,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           currentTick: pool.tick,
           token0: pool.token0,
           token1: pool.token1,
+          blockRange: blockRange,  // ✅ 블록 범위 추가
           recommendations: recommendations.slice(0, 10)
         };
 
@@ -324,4 +330,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-console.log('✓✓✓ Background script loaded v1.2.0 (with ERC20 decimals query) ✓✓✓');
+console.log('✓✓✓ Background script loaded v1.3.0 (with configurable block range) ✓✓✓');
