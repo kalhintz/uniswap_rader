@@ -1,6 +1,61 @@
+// 체인별 설정
+const CHAIN_CONFIG = {
+  ethereum: {
+    chainId: 1,
+    blockTime: 12, // seconds
+    rpcUrls: [
+      'https://eth.drpc.org',
+      'https://cloudflare-eth.com',
+      'https://ethereum-rpc.publicnode.com'
+    ]
+  },
+  base: {
+    chainId: 8453,
+    blockTime: 2, // seconds
+    rpcUrls: [
+      'https://base.drpc.org',
+      'https://mainnet.base.org',
+      'https://base-rpc.publicnode.com'
+    ]
+  },
+  polygon: {
+    chainId: 137,
+    blockTime: 2, // seconds
+    rpcUrls: [
+      'https://polygon.drpc.org',
+      'https://polygon-rpc.com'
+    ]
+  },
+  optimism: {
+    chainId: 10,
+    blockTime: 2, // seconds
+    rpcUrls: [
+      'https://optimism.drpc.org',
+      'https://mainnet.optimism.io'
+    ]
+  },
+  arbitrum: {
+    chainId: 42161,
+    blockTime: 0.25, // seconds (매우 빠름)
+    rpcUrls: [
+      'https://arbitrum.drpc.org',
+      'https://arb1.arbitrum.io'
+    ]
+  },
+  bnb: {
+    chainId: 56,
+    blockTime: 3, // seconds
+    rpcUrls: [
+      'https://bsc.drpc.org',
+      'https://bsc-dataseed.binance.org'
+    ]
+  }
+};
+
 // Token decimals 조회 (ERC20 contract)
-async function getTokenDecimals(tokenAddress) {
-  const RPC_URLS = ['https://eth.drpc.org', 'https://cloudflare-eth.com'];
+async function getTokenDecimals(tokenAddress, chain = 'ethereum') {
+  const config = CHAIN_CONFIG[chain] || CHAIN_CONFIG.ethereum;
+  const RPC_URLS = config.rpcUrls;
 
   // decimals() 함수 signature: 0x313ce567
   const data = '0x313ce567';
@@ -35,12 +90,15 @@ async function getTokenDecimals(tokenAddress) {
 }
 
 // Uniswap API
-async function findPoolAddress(token0, token1, fee) {
+async function findPoolAddress(token0, token1, fee, chain = 'ethereum') {
+  const config = CHAIN_CONFIG[chain] || CHAIN_CONFIG.ethereum;
+  const chainId = config.chainId;
+
   const response = await fetch('https://interface.gateway.uniswap.org/v2/data.v1.DataApiService/ListPools', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      chainId: 1,
+      chainId: chainId,
       token0,
       token1,
       fee,
@@ -65,8 +123,8 @@ async function findPoolAddress(token0, token1, fee) {
   console.log('[API] Extracted poolToken1:', poolToken1);
 
   // ✅ Decimals를 직접 조회 (풀의 실제 토큰 주소 사용)
-  const token0Decimals = await getTokenDecimals(poolToken0 || token0);
-  const token1Decimals = await getTokenDecimals(poolToken1 || token1);
+  const token0Decimals = await getTokenDecimals(poolToken0 || token0, chain);
+  const token1Decimals = await getTokenDecimals(poolToken1 || token1, chain);
 
   return {
     poolId: pool.poolId,
@@ -79,13 +137,14 @@ async function findPoolAddress(token0, token1, fee) {
 }
 
 // RPC
-async function getMintEventsWeb3(poolAddress, blockRange = 5000) {
-  const RPC_URLS = ['https://eth.drpc.org', 'https://cloudflare-eth.com', 'https://ethereum-rpc.publicnode.com'];
+async function getMintEventsWeb3(poolAddress, blockRange = 5000, chain = 'ethereum') {
+  const config = CHAIN_CONFIG[chain] || CHAIN_CONFIG.ethereum;
+  const RPC_URLS = config.rpcUrls;
 
   for (const RPC_URL of RPC_URLS) {
     try {
       console.log('[RPC] Trying:', RPC_URL);
-      const result = await fetchMintEvents(RPC_URL, poolAddress, blockRange);
+      const result = await fetchMintEvents(RPC_URL, poolAddress, blockRange, config.blockTime);
       console.log('[RPC] ✓ Success:', result.length, 'events');
       return result;
     } catch (e) {
@@ -95,7 +154,7 @@ async function getMintEventsWeb3(poolAddress, blockRange = 5000) {
   throw new Error('All RPC failed');
 }
 
-async function fetchMintEvents(RPC_URL, poolAddress, blockRange) {
+async function fetchMintEvents(RPC_URL, poolAddress, blockRange, blockTime) {
   const blockRes = await fetch(RPC_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -108,7 +167,8 @@ async function fetchMintEvents(RPC_URL, poolAddress, blockRange) {
   const latestBlock = parseInt(blockData.result, 16);
   const fromBlock = latestBlock - blockRange;
 
-  console.log('[RPC] Blocks:', fromBlock, '-', latestBlock, `(${blockRange} blocks, ~${Math.floor(blockRange * 12 / 3600)}h)`);
+  const estimatedHours = Math.floor(blockRange * blockTime / 3600);
+  console.log('[RPC] Blocks:', fromBlock, '-', latestBlock, `(${blockRange} blocks, ~${estimatedHours}h)`);
 
   const logsRes = await fetch(RPC_URL, {
     method: 'POST',
@@ -255,7 +315,7 @@ function analyzePositions(positions, currentTick, token0Decimals, token1Decimals
 // 메시지 리스너
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'GET_POOL_RANGES') {
-    const { token0, token1, fee } = request.data;
+    const { token0, token1, fee, chain = 'ethereum' } = request.data;
 
     (async () => {
       try {
@@ -263,22 +323,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const storage = await chrome.storage.sync.get(['blockRange']);
         const blockRange = storage.blockRange || 5000;
 
+        const config = CHAIN_CONFIG[chain] || CHAIN_CONFIG.ethereum;
+        const estimatedHours = Math.floor(blockRange * config.blockTime / 3600);
+
         console.log('='.repeat(80));
         console.log('[BACKGROUND] Starting...');
+        console.log('[BACKGROUND] Chain:', chain, `(chainId: ${config.chainId})`);
         console.log('[BACKGROUND] Token0:', token0);
         console.log('[BACKGROUND] Token1:', token1);
         console.log('[BACKGROUND] Fee:', fee);
-        console.log('[BACKGROUND] Block Range:', blockRange, `(~${Math.floor(blockRange * 12 / 3600)}h)`);
+        console.log('[BACKGROUND] Block Range:', blockRange, `(~${estimatedHours}h)`);
 
         console.log('[Step 1] Finding pool...');
-        const pool = await findPoolAddress(token0, token1, fee);
+        const pool = await findPoolAddress(token0, token1, fee, chain);
         console.log('[Step 1] ✓ Pool:', pool.poolId);
         console.log('[Step 1] ✓ Tick:', pool.tick);
         console.log('[Step 1] ✓ Token0 decimals:', pool.token0Decimals);
         console.log('[Step 1] ✓ Token1 decimals:', pool.token1Decimals);
 
         console.log('[Step 2] Fetching events...');
-        const positions = await getMintEventsWeb3(pool.poolId, blockRange);
+        const positions = await getMintEventsWeb3(pool.poolId, blockRange, chain);
         console.log('[Step 2] ✓ Positions:', positions.length);
 
         if (!positions.length) {
@@ -303,6 +367,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           token0: pool.token0,
           token1: pool.token1,
           blockRange: blockRange,  // ✅ 블록 범위 추가
+          chain: chain,  // ✅ 체인 정보 추가
           recommendations: recommendations.slice(0, 10)
         };
 
@@ -330,4 +395,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-console.log('✓✓✓ Background script loaded v1.3.0 (with configurable block range) ✓✓✓');
+console.log('✓✓✓ Background script loaded v1.4.0 (multi-chain support) ✓✓✓');
