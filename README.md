@@ -88,7 +88,7 @@ uniswap_rader/
 
 ## 🐛 버그 리포트 및 기여
 
-버그를 발견하시거나 기능 제안이 있으시면 (https://t.me/justcoinchat)에 남겨주세요!
+버그를 발견하시거나 기능 제안이 있으시면 (https://t.me/justcoinchat) 에 남겨주세요!
 
 Pull Request도 환영합니다.
 
