@@ -20,6 +20,26 @@ function getURLParams() {
   return { currencyA, currencyB, chain, fee };
 }
 
+// 시간 계산 (이더리움 블록타임: ~12초)
+function calculateTime(blocks) {
+  const seconds = blocks * 12;
+  const hours = seconds / 3600;
+
+  if (hours < 1) {
+    const minutes = Math.round(seconds / 60);
+    return `약 ${minutes}분`;
+  } else if (hours < 24) {
+    return `약 ${Math.round(hours)}시간`;
+  } else {
+    const days = Math.floor(hours / 24);
+    const remainingHours = Math.round(hours % 24);
+    if (remainingHours > 0) {
+      return `약 ${days}일 ${remainingHours}시간`;
+    }
+    return `약 ${days}일`;
+  }
+}
+
 // NATIVE를 WETH 주소로 변환
 function normalizeTokenAddress(address, chain) {
   if (address === 'NATIVE' && chain === 'ethereum') {
@@ -68,10 +88,11 @@ function formatPrice(price) {
 }
 
 // 추천 range를 UI에 표시
-function displayRecommendations(recommendations, feeTier = 3000) {
+function displayRecommendations(recommendations, feeTier = 3000, blockRange = 5000) {
   console.log('='.repeat(50));
   console.log('[UI] displayRecommendations called');
   console.log('[UI] Fee tier:', feeTier);
+  console.log('[UI] Block range:', blockRange);
   console.log('[UI] Recommendations:', recommendations);
 
   // 기존 추천 제거
@@ -89,6 +110,9 @@ function displayRecommendations(recommendations, feeTier = 3000) {
   top3.forEach((rec, i) => {
     console.log(`[UI] #${i+1}: minPrice=${rec.minPrice}, maxPrice=${rec.maxPrice}`);
   });
+
+  // 시간 계산
+  const timeStr = calculateTime(blockRange);
 
   // 추천 패널 생성
   const panel = document.createElement('div');
@@ -132,7 +156,7 @@ function displayRecommendations(recommendations, feeTier = 3000) {
       }).join('')}
     </div>
     <div class="recommendation-footer">
-      <span class="recommendation-note">최근 5,000블록 기준 (~17시간)</span>
+      <span class="recommendation-note">최근 ${blockRange.toLocaleString()}블록 기준 (${timeStr})</span>
       <span class="recommendation-note">⚠️ APY는 대략적인 추정치입니다</span>
     </div>
   `;
@@ -580,7 +604,9 @@ async function main() {
       });
       console.log('='.repeat(80));
 
-      displayRecommendations(response.recommendations, params.fee);
+      const blockRange = response.blockRange || 5000;
+      console.log('[CONTENT] Block range:', blockRange);
+      displayRecommendations(response.recommendations, params.fee, blockRange);
     }
   );
 }
